@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/socialbot
+    username: socialbot_user
+    password: socialbot_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 2
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.grid07.socialbot: INFO
+    org.springframework.data.redis: DEBUG
+
+app:
+  notification:
+    cooldown-minutes: 15
+    sweeper-cron: "0 */5 * * * *"
+  bot:
+    cooldown-minutes: 10
+    max-bot-replies: 100
+    max-comment-depth: 20
