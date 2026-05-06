@@ -1,0 +1,390 @@
+{
+  "info": {
+    "name": "Grid07 Social Bot API",
+    "_postman_id": "grid07-socialbot-collection",
+    "description": "API collection for testing the Grid07 assignment",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "botId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "postId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Setup",
+      "item": [
+        {
+          "name": "Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('userId', json.data.id);",
+                  "    console.log('Created user id:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"premium\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Create Bot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('botId', json.data.id);",
+                  "    console.log('Created bot id:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"TechBot\",\n  \"personaDescription\": \"A friendly tech-savvy bot that comments on posts about technology.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bots"]
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get All Bots",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/bots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bots"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts and Comments",
+      "item": [
+        {
+          "name": "Create Post (by User)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('postId', json.data.id);",
+                  "    console.log('Created post id:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{userId}},\n  \"authorType\": \"USER\",\n  \"content\": \"My first post about Spring Boot microservices!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Create Post (by Bot)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{botId}},\n  \"authorType\": \"BOT\",\n  \"content\": \"Automated post from TechBot about Redis atomic operations!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Get Post",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Add Human Comment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{userId}},\n  \"authorType\": \"USER\",\n  \"content\": \"Great post! I love Spring Boot.\",\n  \"depthLevel\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Add Bot Comment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{botId}},\n  \"authorType\": \"BOT\",\n  \"content\": \"Interesting! Here is my automated reply.\",\n  \"depthLevel\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Like Post",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}/like",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}", "like"]
+            }
+          }
+        },
+        {
+          "name": "Get Comments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}", "comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Guardrail Tests",
+      "item": [
+        {
+          "name": "Test Depth Cap (depth 21 - should 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{userId}},\n  \"authorType\": \"USER\",\n  \"content\": \"This comment exceeds max depth\",\n  \"depthLevel\": 21\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Test Cooldown (2nd bot comment same post - should 429)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 429', () => {",
+                  "    pm.response.to.have.status(429);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{botId}},\n  \"authorType\": \"BOT\",\n  \"content\": \"Second bot reply - should be blocked\",\n  \"depthLevel\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Redis Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has viralityScore', () => {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.data).to.have.property('viralityScore');",
+                  "    pm.expect(json.data).to.have.property('botReplyCount');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/debug/posts/{{postId}}/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "debug", "posts", "{{postId}}", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Test 404 (post doesnt exist)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 404', () => {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "99999"]
+            }
+          }
+        },
+        {
+          "name": "Test validation (missing content)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{userId}},\n  \"authorType\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Test Bot Cap (101st request - expect 429)",
+          "description": "Run 100 bot comments first using a load test tool, then this one should fail",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorId\": {{botId}},\n  \"authorType\": \"BOT\",\n  \"content\": \"This should be the 101st bot reply - expect 429\",\n  \"depthLevel\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/{{postId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "{{postId}}", "comments"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
