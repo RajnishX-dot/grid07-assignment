@@ -1,7 +1,7 @@
 ## 🚀 Live Demo
 
 The API is currently deployed and running live on Render. 
-- **[Base URL]:** `(https://grid07-assignment.onrender.com)`
+**Base URL:** [https://grid07-assignment.onrender.com](https://grid07-assignment.onrender.com)
 
 *Note: Since this is a backend microservice, visiting the URL directly in a browser won't show a webpage. Please import the provided Postman collection and replace `localhost:8080` with the Base URL to test the endpoints.*
 
