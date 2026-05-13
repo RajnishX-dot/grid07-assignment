@@ -53,7 +53,7 @@
 
   function updateOriginPill() {
     const r = apiRoot();
-    els.originPill.textContent = r ? `API: ${r}` : "API: same origin";
+    els.originPill.textContent = r ? `Remote: ${r}` : "Same host as API";
     els.originPill.title = r || window.location.origin;
   }
 
@@ -107,11 +107,11 @@
   async function handlePing() {
     save();
     try {
-      const { res, json } = await fetchJson("/api/users");
+      const { res, json } = await fetchJson("/health");
       if (res.ok) {
-        logLine(`GET /api/users → ${res.status}`, "ok");
+        logLine(`GET /health → ${res.status} ${JSON.stringify(json)}`, "ok");
       } else {
-        logLine(`GET /api/users → ${res.status} ${JSON.stringify(json)}`, "warn");
+        logLine(`GET /health → ${res.status} ${JSON.stringify(json)}`, "warn");
       }
     } catch (e) {
       logLine(`Ping failed: ${e instanceof Error ? e.message : String(e)}`, "error");
@@ -399,6 +399,6 @@
 
   load();
   wire();
-  els.postContent.placeholder = `Example: Redis guardrails + virality — ${new Date().getFullYear()} demo post`;
-  logLine("Ready. Leave base URL empty when this page is served by the API host, then use Create user → Create bot → Create post.");
+  els.postContent.placeholder = `Shipped Redis throttling today — ${new Date().getFullYear()}`;
+  logLine("Tip: blank base URL, then New human → New bot → Publish post.");
 })();

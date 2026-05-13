@@ -3,157 +3,252 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Grid07 Social Bot — Live Console</title>
+    <meta name="theme-color" content="#100f0e" />
+    <title>Grid07 · feed playground</title>
     <meta
       name="description"
-      content="Interactive console for the Grid07 Social Bot API: posts, comments, Redis guardrails, and virality."
+      content="Hands-on demo for the Grid07 social bot API: posts, threads, likes, and Redis limits."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23c17f3a' width='32' height='32' rx='8'/%3E%3Cg fill='%23100f0e'%3E%3Ccircle cx='10' cy='10' r='2.2'/%3E%3Ccircle cx='16' cy='10' r='2.2'/%3E%3Ccircle cx='22' cy='10' r='2.2'/%3E%3Ccircle cx='10' cy='16' r='2.2'/%3E%3Ccircle cx='16' cy='16' r='2.2'/%3E%3Ccircle cx='22' cy='16' r='2.2'/%3E%3Ccircle cx='10' cy='22' r='2.2'/%3E%3Ccircle cx='16' cy='22' r='2.2'/%3E%3Ccircle cx='22' cy='22' r='2.2'/%3E%3C/g%3E%3C/svg%3E"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@6..72,500;6..72,600;6..72,700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/assets/app.css" />
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to panels</a>
     <div class="wrap">
-      <header class="hero">
-        <div class="hero-top">
-          <div>
-            <div class="badge"><span class="badge-dot" aria-hidden="true"></span> Grid07 assignment</div>
-            <h1>Social Bot — live console</h1>
-            <p class="sub">
-              Drive your Spring Boot API from the browser: create users and bots, publish posts, add comments, and
-              inspect Redis-backed guardrails. When this page is served from the same host as the API (bundled static
-              files), requests stay <strong>same-origin</strong>—no extra round trips to fix CORS.
+      <header class="masthead">
+        <div class="masthead-top">
+          <div class="masthead-inner">
+            <p class="kicker">Grid07 take-home · Spring Boot + Postgres + Redis</p>
+            <h1>Feed playground</h1>
+            <p class="lede">
+              Wire up a human and a bot, drop a post, poke the thread. The API enforces the boring stuff (depth cap, bot
+              reply budget, cooldowns) in Redis—this page is just a friendly front seat.
             </p>
           </div>
-          <div class="pill live" id="origin-pill" title="Resolved API base">API: same origin</div>
+          <figure class="hero-art" aria-hidden="true">
+            <svg viewBox="0 0 320 220" width="320" height="220" xmlns="http://www.w3.org/2000/svg" role="img">
+              <title>Abstract feed and Redis guardrails</title>
+              <defs>
+                <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color: #c17f3a; stop-opacity: 0.35" />
+                  <stop offset="100%" style="stop-color: #6d9b8a; stop-opacity: 0.15" />
+                </linearGradient>
+                <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+                  <feGaussianBlur stdDeviation="1.2" result="b" />
+                  <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
+              <rect x="8" y="12" width="304" height="196" rx="18" fill="#141210" stroke="#3a3632" stroke-width="1.5" />
+              <path d="M38 48h180M38 58h140M38 68h160" stroke="#3a3632" stroke-width="2.5" stroke-linecap="round" />
+              <rect x="28" y="88" width="118" height="72" rx="8" fill="#1e1c19" stroke="#c17f3a" stroke-opacity="0.45" stroke-width="1" />
+              <rect x="36" y="98" width="72" height="6" rx="2" fill="#6d9b8a" opacity="0.55" />
+              <rect x="36" y="112" width="92" height="5" rx="2" fill="#8a8178" opacity="0.45" />
+              <rect x="36" y="124" width="78" height="5" rx="2" fill="#8a8178" opacity="0.35" />
+              <rect x="158" y="82" width="118" height="86" rx="8" fill="#1e1c19" stroke="#6d9b8a" stroke-opacity="0.4" stroke-width="1" />
+              <rect x="168" y="94" width="84" height="6" rx="2" fill="#c17f3a" opacity="0.5" />
+              <rect x="168" y="108" width="72" height="5" rx="2" fill="#8a8178" opacity="0.4" />
+              <rect x="168" y="120" width="88" height="5" rx="2" fill="#8a8178" opacity="0.3" />
+              <circle cx="62" cy="158" r="14" fill="#2a2622" stroke="#ebe6e0" stroke-opacity="0.35" stroke-width="1.5" />
+              <path d="M54 166c4 6 12 6 16 0" stroke="#ebe6e0" stroke-opacity="0.5" fill="none" stroke-width="1.5" stroke-linecap="round" />
+              <rect x="208" y="138" width="28" height="24" rx="6" fill="#2a2622" stroke="#c17f3a" stroke-opacity="0.6" stroke-width="1" />
+              <path d="M216 132v8M228 132v8" stroke="#c17f3a" stroke-opacity="0.7" stroke-width="2" stroke-linecap="round" />
+              <circle cx="214" cy="150" r="3" fill="#6d9b8a" /><circle cx="222" cy="150" r="3" fill="#6d9b8a" />
+              <path d="M148 120 L172 118 L188 158 L158 160 Z" fill="url(#heroGrad)" opacity="0.85" filter="url(#soft)" />
+              <g transform="translate(248 36)">
+                <ellipse cx="28" cy="52" rx="22" ry="14" fill="#2a2622" stroke="#c17f3a" stroke-opacity="0.5" />
+                <ellipse cx="28" cy="38" rx="22" ry="14" fill="#2a2622" stroke="#6d9b8a" stroke-opacity="0.45" />
+                <ellipse cx="28" cy="24" rx="22" ry="14" fill="#2a2622" stroke="#ebe6e0" stroke-opacity="0.2" />
+                <circle cx="22" cy="22" r="2.5" fill="#c17f3a" opacity="0.75" />
+                <circle cx="28" cy="20" r="2.5" fill="#6d9b8a" opacity="0.75" />
+                <circle cx="34" cy="22" r="2.5" fill="#ebe6e0" opacity="0.35" />
+              </g>
+              <path d="M124 126v24l52 12" stroke="#c17f3a" stroke-opacity="0.35" fill="none" stroke-width="1.5" stroke-dasharray="4 5" />
+              <circle cx="124" cy="126" r="4" fill="#c17f3a" opacity="0.8" />
+              <circle cx="248" cy="72" r="4" fill="#6d9b8a" opacity="0.75" />
+            </svg>
+          </figure>
+        </div>
+        <div class="masthead-meta">
+          <div class="status-chip" id="origin-pill" title="Where requests go">Same host as API</div>
+          <ul class="hero-ticks" aria-label="What you can try">
+            <li>Humans like posts</li>
+            <li>Bots capped per thread</li>
+            <li>Virality in Redis</li>
+          </ul>
         </div>
       </header>
 
-      <div class="grid grid-2">
-        <section class="card">
-          <h2>Connection <span class="tag">efficiency</span></h2>
-          <label for="baseUrl">API base URL</label>
+      <main id="main" class="panels">
+        <section class="panel">
+          <h2 class="panel-title">
+            <span class="panel-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg"
+                ><path d="M12 3v4M12 17v4M4 12h4M16 12h4" stroke="#c17f3a" stroke-width="1.8" stroke-linecap="round" /><circle cx="12" cy="12" r="4.5" stroke="#6d9b8a" stroke-width="1.6" /></svg
+            ></span>
+            <span class="panel-num">01</span> Connection
+          </h2>
+          <label for="baseUrl">Base URL (optional)</label>
           <input
             id="baseUrl"
             type="url"
-            placeholder="Leave empty for same-origin (recommended)"
+            placeholder="Blank = this deployment"
             autocomplete="off"
           />
-          <p class="hint">
-            Empty = relative URLs to this host (e.g. deployed on Render: <kbd>/api/...</kbd>). Set a full URL only if you
-            need a remote API; CORS is enabled on <kbd>/api/**</kbd> for that case.
+          <p class="fine-print">
+            Leave blank on Render or localhost so calls stay on one origin. Fill this only if you’re pointing at another
+            machine (CORS is open on <kbd>/api/</kbd>).
           </p>
-          <div class="row" style="margin-top: 12px">
-            <button type="button" class="btn btn-primary" id="btn-ping">Ping API</button>
-            <button type="button" class="btn btn-ghost" id="btn-clear-log">Clear log</button>
+          <div class="btn-row">
+            <button type="button" class="btn btn-solid" id="btn-ping">Wake /health</button>
+            <button type="button" class="btn btn-line" id="btn-clear-log">Clear log</button>
           </div>
-          <div class="metrics" aria-live="polite">
-            <div class="metric">
-              <strong id="m-requests">0</strong>
-              <span>HTTP requests (session)</span>
+          <dl class="stats" aria-live="polite">
+            <div class="stat">
+              <dt>Requests</dt>
+              <dd id="m-requests">0</dd>
             </div>
-            <div class="metric">
-              <strong id="m-bundled">0</strong>
-              <span>Bundled refreshes</span>
+            <div class="stat">
+              <dt>Bundle pulls</dt>
+              <dd id="m-bundled">0</dd>
             </div>
-            <div class="metric">
-              <strong id="m-last-ms">—</strong>
-              <span>Last bundle (ms)</span>
+            <div class="stat">
+              <dt>Last bundle</dt>
+              <dd id="m-last-ms">—</dd>
             </div>
-          </div>
-          <div class="log" id="log" role="log" aria-label="Activity log"></div>
+          </dl>
+          <div class="log" id="log" role="log" aria-label="Request log"></div>
         </section>
 
-        <section class="card">
-          <h2>Actors <span class="tag">setup</span></h2>
-          <p class="hint" style="margin-top: 0">
-            Usernames must be unique. This console adds a short random suffix so you rarely collide with the shared
-            hosted database—fewer failed retries, less wasted traffic.
+        <section class="panel">
+          <h2 class="panel-title">
+            <span class="panel-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg"
+                ><circle cx="9" cy="10" r="3.5" stroke="#ebe6e0" stroke-width="1.6" /><path d="M4 19c1.5-4 7.5-4 10 0" stroke="#ebe6e0" stroke-width="1.6" stroke-linecap="round" /><rect x="14.5" y="7" width="7" height="7" rx="2" stroke="#c17f3a" stroke-width="1.6" /><path d="M16 11h3M17.5 9.5v3" stroke="#c17f3a" stroke-width="1.4" stroke-linecap="round" /></svg
+            ></span>
+            <span class="panel-num">02</span> Cast
+          </h2>
+          <p class="fine-print">
+            The hosted DB is shared, so usernames need to be unique. New users get a random suffix automatically—saves a
+            409 and a second guess.
           </p>
-          <div class="row" style="margin-top: 12px">
-            <button type="button" class="btn btn-primary" id="btn-create-user">Create user</button>
-            <button type="button" class="btn btn-primary" id="btn-create-bot">Create bot</button>
+          <div class="btn-row">
+            <button type="button" class="btn btn-solid" id="btn-create-user">New human</button>
+            <button type="button" class="btn btn-solid" id="btn-create-bot">New bot</button>
           </div>
-          <label for="userId" style="margin-top: 14px">User ID</label>
-          <input id="userId" type="text" inputmode="numeric" placeholder="e.g. 1" />
-          <label for="botId" style="margin-top: 10px">Bot ID</label>
-          <input id="botId" type="text" inputmode="numeric" placeholder="e.g. 2" />
+          <label for="userId">Human id</label>
+          <input id="userId" type="text" inputmode="numeric" placeholder="after create" />
+          <label for="botId">Bot id</label>
+          <input id="botId" type="text" inputmode="numeric" placeholder="after create" />
           <div class="json-out" id="actors-json" hidden></div>
         </section>
 
-        <section class="card grid-span-2">
-          <h2>Post &amp; thread <span class="tag">core flow</span></h2>
-          <div class="grid grid-2">
+        <section class="panel panel-wide">
+          <h2 class="panel-title">
+            <span class="panel-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg"
+                ><path d="M6 8h10v6H9l-3 3v-9z" stroke="#6d9b8a" stroke-width="1.6" stroke-linejoin="round" /><path d="M13 14h6v5l-2-2h-4v-3z" stroke="#c17f3a" stroke-width="1.6" stroke-linejoin="round" opacity="0.85" /></svg
+            ></span>
+            <span class="panel-num">03</span> Thread
+          </h2>
+          <div class="split">
             <div>
-              <label for="postContent">New post (human user)</label>
-              <textarea id="postContent" placeholder="What should the human post say?"></textarea>
-              <div class="row" style="margin-top: 10px">
-                <button type="button" class="btn btn-primary" id="btn-create-post">Create post</button>
-                <button type="button" class="btn btn-ghost" id="btn-bundle-refresh">Bundle refresh</button>
+              <label for="postContent">Post body</label>
+              <textarea id="postContent" placeholder="Something a human would actually write…"></textarea>
+              <div class="btn-row">
+                <button type="button" class="btn btn-solid" id="btn-create-post">Publish post</button>
+                <button type="button" class="btn btn-line" id="btn-bundle-refresh">Refresh snapshot</button>
               </div>
-              <p class="hint">
-                <strong>Bundle refresh</strong> runs <kbd>GET /api/posts/{id}</kbd>,
-                <kbd>GET /api/posts/{id}/comments</kbd>, and <kbd>GET /api/debug/.../stats</kbd> in parallel—three reads
-                in one click instead of hunting three buttons.
+              <p class="fine-print">
+                Refresh pulls post, comments, and Redis counters together—one round trip from your side, three GETs under
+                the hood.
               </p>
             </div>
             <div>
-              <label for="postId">Post ID</label>
-              <input id="postId" type="text" inputmode="numeric" placeholder="Set after creating a post" />
-              <label for="humanComment" style="margin-top: 10px">Human comment</label>
-              <textarea id="humanComment" placeholder="Friendly human reply…"></textarea>
-              <div class="row" style="margin-top: 10px">
-                <button type="button" class="btn btn-primary" id="btn-human-comment">Add human comment</button>
-                <button type="button" class="btn btn-primary" id="btn-like">Like post</button>
+              <label for="postId">Post id</label>
+              <input id="postId" type="text" inputmode="numeric" placeholder="from publish" />
+              <label for="humanComment">Human reply</label>
+              <textarea id="humanComment" placeholder="Short reply from the human id…"></textarea>
+              <div class="btn-row">
+                <button type="button" class="btn btn-solid" id="btn-human-comment">Comment</button>
+                <button type="button" class="btn btn-solid" id="btn-like">Like</button>
               </div>
             </div>
           </div>
-          <label for="botComment" style="margin-top: 14px">Bot comment</label>
-          <textarea id="botComment" placeholder="Automated bot reply (subject to caps &amp; cooldown)…"></textarea>
-          <div class="row" style="margin-top: 10px">
-            <button type="button" class="btn btn-primary" id="btn-bot-comment">Add bot comment</button>
+          <label for="botComment">Bot reply</label>
+          <textarea id="botComment" placeholder="Bot voice—subject to caps and cooldown…"></textarea>
+          <div class="btn-row">
+            <button type="button" class="btn btn-solid" id="btn-bot-comment">Send bot comment</button>
           </div>
         </section>
 
-        <section class="card">
-          <h2>Live snapshot <span class="tag">read model</span></h2>
-          <p class="hint" style="margin-top: 0">Last bundled payload (post + comments + Redis stats).</p>
-          <div class="json-out" id="snapshot-json">Run “Bundle refresh” after setting a post ID.</div>
+        <section class="panel">
+          <h2 class="panel-title">
+            <span class="panel-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg"
+                ><path d="M8 6h12v14H8z" stroke="#ebe6e0" stroke-width="1.5" stroke-linejoin="round" opacity="0.7" /><path d="M10 10h8M10 14h6M10 18h4" stroke="#c17f3a" stroke-width="1.4" stroke-linecap="round" opacity="0.65" /><path d="M4 4v14h14" stroke="#6d9b8a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg
+            ></span>
+            <span class="panel-num">04</span> Snapshot
+          </h2>
+          <p class="fine-print">Raw JSON: post payload, comment list, Redis tallies.</p>
+          <div class="json-out" id="snapshot-json">Hit “Refresh snapshot” once you have a post id.</div>
         </section>
 
-        <section class="card">
-          <h2>Guardrail lab <span class="tag">429 / 400</span></h2>
-          <p class="hint" style="margin-top: 0">
-            These actions intentionally probe limits. Use a fresh post when testing horizontal caps—the shared hosted DB
-            may already have posts near quota.
+        <section class="panel">
+          <h2 class="panel-title">
+            <span class="panel-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg"
+                ><path d="M12 4l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V8l8-4z" stroke="#c17a72" stroke-width="1.6" stroke-linejoin="round" /><path d="M12 9v6M9 12h6" stroke="#ebe6e0" stroke-width="1.5" stroke-linecap="round" opacity="0.75" /></svg
+            ></span>
+            <span class="panel-num">05</span> Limits lab
+          </h2>
+          <p class="fine-print">
+            On purpose: these poke validation and rate limits. For the 100-bot cap, the shared server may already be
+            warm—spin up a fresh post if numbers look weird.
           </p>
-          <div class="row" style="margin-top: 12px">
-            <button type="button" class="btn btn-warn" id="btn-depth-bad">Comment at depth 21 (expect 400)</button>
-            <button type="button" class="btn btn-warn" id="btn-cooldown-spam">Two quick bot comments (expect 2nd 429)</button>
+          <div class="btn-row">
+            <button type="button" class="btn btn-caution" id="btn-depth-bad">Depth 21 → expect 400</button>
+            <button type="button" class="btn btn-caution" id="btn-cooldown-spam">Back-to-back bot → expect 429</button>
           </div>
-          <label for="burstN" style="margin-top: 14px">Concurrent bot comments (stress sample)</label>
+          <label for="burstN">Parallel bot comments (max 30)</label>
           <input id="burstN" type="number" min="1" max="30" value="8" />
-          <div class="row" style="margin-top: 10px">
-            <button type="button" class="btn btn-warn" id="btn-burst">Fire burst (parallel)</button>
+          <div class="btn-row">
+            <button type="button" class="btn btn-caution" id="btn-burst">Run burst</button>
           </div>
-          <p class="hint">
-            Capped at 30 in the UI so you do not accidentally open hundreds of connections from one click. For a full
-            200-concurrent test, use <kbd>ab</kbd> or your load tool as in the README.
+          <p class="fine-print">
+            For the full 200-in-flight test, README still points at <kbd>ab</kbd>—this button is just a quick stress
+            sample.
           </p>
         </section>
+      </main>
+
+      <div class="footer-band" aria-hidden="true">
+        <svg class="footer-pattern" viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="3" cy="3" r="1.2" fill="#c17f3a" opacity="0.25" />
+              <circle cx="13" cy="13" r="1" fill="#6d9b8a" opacity="0.2" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dots)" />
+          <path d="M0 36 Q300 8 600 36 T1200 36 L1200 48 L0 48 Z" fill="#141210" opacity="0.92" />
+        </svg>
       </div>
 
-      <footer>
+      <footer class="colophon">
         <p>
-          Open source API project:
-          <a href="https://github.com/RajnishX-dot/grid07-assignment" rel="noopener noreferrer">RajnishX-dot/grid07-assignment</a>.
-          Deployed demo base (backend):
+          Code:
+          <a href="https://github.com/RajnishX-dot/grid07-assignment" rel="noopener noreferrer">github.com/RajnishX-dot/grid07-assignment</a>
+          · Live:
           <a href="https://grid07-assignment.onrender.com" rel="noopener noreferrer">grid07-assignment.onrender.com</a>
-          — after redeploy with this UI, open the root URL for this console.
         </p>
       </footer>
     </div>
