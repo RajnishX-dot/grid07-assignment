@@ -1,12 +1,14 @@
-## 🚀 Live Demo
+## Live demo
 
-The API is currently deployed and running live on Render.
+The service is deployed on Render.
 
 **Base URL:** [https://grid07-assignment.onrender.com](https://grid07-assignment.onrender.com)
 
-*Note: Since this is a backend microservice, visiting the URL directly in a browser won't show a webpage. Please import the provided Postman collection and replace `localhost:8080` with the Base URL to test the endpoints.*
+**Web console (interactive UI):** open the root URL — [https://grid07-assignment.onrender.com/](https://grid07-assignment.onrender.com/) — which serves a static **Social Bot live console** (`/index.html`). It talks to the same host (`/api/...`), so demos work without CORS setup. You can still use the Postman collection for raw requests; replace `localhost:8080` with the base URL above.
 
-# Grid07 Social Bot 
+---
+
+# Grid07 Social Bot
 
 This is my submission for the Grid07 backend assignment. I built a Spring Boot microservice that simulates a social platform where bots can interact with human posts, with Redis-based guardrails to prevent abuse.
 
@@ -31,7 +33,7 @@ Then run the app from your IDE or:
 ./mvnw spring-boot:run
 ```
 
-App starts on `http://localhost:8080`. Import the Postman collection to test everything.
+App starts on `http://localhost:8080`. Open `http://localhost:8080/` for the web console, or import the Postman collection to test everything.
 
 ---
 
@@ -42,7 +44,8 @@ src/main/java/com/grid07/socialbot/
 ├── SocialbotApplication.java
 ├── config/
 │   ├── RedisConfig.java
-│   └── GlobalExceptionHandler.java
+│   ├── GlobalExceptionHandler.java
+│   └── WebConfig.java
 ├── controller/
 │   ├── PostController.java
 │   ├── UserBotController.java
@@ -57,6 +60,12 @@ src/main/java/com/grid07/socialbot/
     ├── PostService.java
     ├── CommentService.java
     └── UserBotService.java
+
+src/main/resources/static/
+├── index.html
+└── assets/
+    ├── app.css
+    └── app.js
 ```
 
 ---

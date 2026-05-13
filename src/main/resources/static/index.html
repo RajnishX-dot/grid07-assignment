@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grid07 Social Bot — Live Console</title>
+    <meta
+      name="description"
+      content="Interactive console for the Grid07 Social Bot API: posts, comments, Redis guardrails, and virality."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="badge"><span class="badge-dot" aria-hidden="true"></span> Grid07 assignment</div>
+            <h1>Social Bot — live console</h1>
+            <p class="sub">
+              Drive your Spring Boot API from the browser: create users and bots, publish posts, add comments, and
+              inspect Redis-backed guardrails. When this page is served from the same host as the API (bundled static
+              files), requests stay <strong>same-origin</strong>—no extra round trips to fix CORS.
+            </p>
+          </div>
+          <div class="pill live" id="origin-pill" title="Resolved API base">API: same origin</div>
+        </div>
+      </header>
+
+      <div class="grid grid-2">
+        <section class="card">
+          <h2>Connection <span class="tag">efficiency</span></h2>
+          <label for="baseUrl">API base URL</label>
+          <input
+            id="baseUrl"
+            type="url"
+            placeholder="Leave empty for same-origin (recommended)"
+            autocomplete="off"
+          />
+          <p class="hint">
+            Empty = relative URLs to this host (e.g. deployed on Render: <kbd>/api/...</kbd>). Set a full URL only if you
+            need a remote API; CORS is enabled on <kbd>/api/**</kbd> for that case.
+          </p>
+          <div class="row" style="margin-top: 12px">
+            <button type="button" class="btn btn-primary" id="btn-ping">Ping API</button>
+            <button type="button" class="btn btn-ghost" id="btn-clear-log">Clear log</button>
+          </div>
+          <div class="metrics" aria-live="polite">
+            <div class="metric">
+              <strong id="m-requests">0</strong>
+              <span>HTTP requests (session)</span>
+            </div>
+            <div class="metric">
+              <strong id="m-bundled">0</strong>
+              <span>Bundled refreshes</span>
+            </div>
+            <div class="metric">
+              <strong id="m-last-ms">—</strong>
+              <span>Last bundle (ms)</span>
+            </div>
+          </div>
+          <div class="log" id="log" role="log" aria-label="Activity log"></div>
+        </section>
+
+        <section class="card">
+          <h2>Actors <span class="tag">setup</span></h2>
+          <p class="hint" style="margin-top: 0">
+            Usernames must be unique. This console adds a short random suffix so you rarely collide with the shared
+            hosted database—fewer failed retries, less wasted traffic.
+          </p>
+          <div class="row" style="margin-top: 12px">
+            <button type="button" class="btn btn-primary" id="btn-create-user">Create user</button>
+            <button type="button" class="btn btn-primary" id="btn-create-bot">Create bot</button>
+          </div>
+          <label for="userId" style="margin-top: 14px">User ID</label>
+          <input id="userId" type="text" inputmode="numeric" placeholder="e.g. 1" />
+          <label for="botId" style="margin-top: 10px">Bot ID</label>
+          <input id="botId" type="text" inputmode="numeric" placeholder="e.g. 2" />
+          <div class="json-out" id="actors-json" hidden></div>
+        </section>
+
+        <section class="card grid-span-2">
+          <h2>Post &amp; thread <span class="tag">core flow</span></h2>
+          <div class="grid grid-2">
+            <div>
+              <label for="postContent">New post (human user)</label>
+              <textarea id="postContent" placeholder="What should the human post say?"></textarea>
+              <div class="row" style="margin-top: 10px">
+                <button type="button" class="btn btn-primary" id="btn-create-post">Create post</button>
+                <button type="button" class="btn btn-ghost" id="btn-bundle-refresh">Bundle refresh</button>
+              </div>
+              <p class="hint">
+                <strong>Bundle refresh</strong> runs <kbd>GET /api/posts/{id}</kbd>,
+                <kbd>GET /api/posts/{id}/comments</kbd>, and <kbd>GET /api/debug/.../stats</kbd> in parallel—three reads
+                in one click instead of hunting three buttons.
+              </p>
+            </div>
+            <div>
+              <label for="postId">Post ID</label>
+              <input id="postId" type="text" inputmode="numeric" placeholder="Set after creating a post" />
+              <label for="humanComment" style="margin-top: 10px">Human comment</label>
+              <textarea id="humanComment" placeholder="Friendly human reply…"></textarea>
+              <div class="row" style="margin-top: 10px">
+                <button type="button" class="btn btn-primary" id="btn-human-comment">Add human comment</button>
+                <button type="button" class="btn btn-primary" id="btn-like">Like post</button>
+              </div>
+            </div>
+          </div>
+          <label for="botComment" style="margin-top: 14px">Bot comment</label>
+          <textarea id="botComment" placeholder="Automated bot reply (subject to caps &amp; cooldown)…"></textarea>
+          <div class="row" style="margin-top: 10px">
+            <button type="button" class="btn btn-primary" id="btn-bot-comment">Add bot comment</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Live snapshot <span class="tag">read model</span></h2>
+          <p class="hint" style="margin-top: 0">Last bundled payload (post + comments + Redis stats).</p>
+          <div class="json-out" id="snapshot-json">Run “Bundle refresh” after setting a post ID.</div>
+        </section>
+
+        <section class="card">
+          <h2>Guardrail lab <span class="tag">429 / 400</span></h2>
+          <p class="hint" style="margin-top: 0">
+            These actions intentionally probe limits. Use a fresh post when testing horizontal caps—the shared hosted DB
+            may already have posts near quota.
+          </p>
+          <div class="row" style="margin-top: 12px">
+            <button type="button" class="btn btn-warn" id="btn-depth-bad">Comment at depth 21 (expect 400)</button>
+            <button type="button" class="btn btn-warn" id="btn-cooldown-spam">Two quick bot comments (expect 2nd 429)</button>
+          </div>
+          <label for="burstN" style="margin-top: 14px">Concurrent bot comments (stress sample)</label>
+          <input id="burstN" type="number" min="1" max="30" value="8" />
+          <div class="row" style="margin-top: 10px">
+            <button type="button" class="btn btn-warn" id="btn-burst">Fire burst (parallel)</button>
+          </div>
+          <p class="hint">
+            Capped at 30 in the UI so you do not accidentally open hundreds of connections from one click. For a full
+            200-concurrent test, use <kbd>ab</kbd> or your load tool as in the README.
+          </p>
+        </section>
+      </div>
+
+      <footer>
+        <p>
+          Open source API project:
+          <a href="https://github.com/RajnishX-dot/grid07-assignment" rel="noopener noreferrer">RajnishX-dot/grid07-assignment</a>.
+          Deployed demo base (backend):
+          <a href="https://grid07-assignment.onrender.com" rel="noopener noreferrer">grid07-assignment.onrender.com</a>
+          — after redeploy with this UI, open the root URL for this console.
+        </p>
+      </footer>
+    </div>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>
